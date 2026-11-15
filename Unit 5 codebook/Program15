@@ -1,0 +1,145 @@
+
+#include <iostream>       // Includes input and output functions
+#include <array>          // Includes array container
+#include <stdexcept>      // Includes stack exception classes
+#include <string>         // Includes string class
+using namespace std;      // Uses standard namespace
+
+// Creates a stack class template with type and capacity
+template <typename T, size_t N = 3>
+class Stack
+{
+    // Checks that stack capacity is greater than zero
+    static_assert(N > 0, "Capacity must be positive");
+
+    // Creates fixed-size array to store stack elements
+    array<T, N> data{};
+
+    // Stores the number of elements in stack
+    size_t used = 0;
+
+public:
+    // Function to insert an element into stack
+    void push(const T& value)
+    {
+        // Checks whether stack is full
+        if (used == N)
+            throw overflow_error("Stack full");
+
+        // Stores value at current position
+        data[used] = value;
+
+        // Increases stack size
+        ++used;
+    }
+
+    // Function to remove and return top element
+    T pop()
+    {
+        // Checks whether stack is empty
+        if (used == 0)
+            throw underflow_error("Stack empty");
+
+        // Stores top element in result variable
+        T result = data[used - 1];
+
+        // Decreases stack size
+        --used;
+
+        // Returns removed element
+        return result;
+    }
+
+    // Function to view top element without removing it
+    T peek() const
+    {
+        // Checks whether stack is empty
+        if (used == 0)
+            throw underflow_error("Stack empty");
+
+        // Returns top element
+        return data[used - 1];
+    }
+
+    // Function to return current stack size
+    size_t size() const
+    {
+        // Returns number of stored elements
+        return used;
+    }
+};
+
+// Main function
+int main()
+{
+    // Creates string stack with capacity 2
+    Stack<string, 2> s;
+
+    // Starts exception handling
+    try
+    {
+        // Inserts Apple into stack
+        s.push("Apple");
+
+        // Inserts Mango into stack
+        s.push("Mango");
+
+        // Displays current stack size
+        cout << "Size: " << s.size() << endl;
+
+        // Displays top element without removing it
+        cout << "Top: " << s.peek() << endl;
+
+        // Tests insertion when stack is full
+        try
+        {
+            // Attempts to insert Orange
+            s.push("Orange");
+        }
+        // Handles stack overflow exception
+        catch (const overflow_error& e)
+        {
+            // Displays stack full message
+            cout << e.what() << endl;
+
+            // Displays size after rejected insertion
+            cout << "Size after rejected push: "
+                 << s.size() << endl;
+        }
+
+        // Removes and displays top element
+        cout << "Popped: " << s.pop() << endl;
+
+        // Removes and displays next element
+        cout << "Popped: " << s.pop() << endl;
+
+        // Displays size after removing elements
+        cout << "Size: " << s.size() << endl;
+
+        // Tests removal when stack is empty
+        try
+        {
+            // Attempts to remove an element
+            s.pop();
+        }
+        // Handles stack underflow exception
+        catch (const underflow_error& e)
+        {
+            // Displays stack empty message
+            cout << e.what() << endl;
+
+            // Displays size after rejected removal
+            cout << "Size after rejected pop: "
+                 << s.size() << endl;
+        }
+    }
+    // Handles other standard exceptions
+    catch (const exception& e)
+    {
+        // Displays exception message
+        cout << e.what() << endl;
+    }
+
+    // Ends the program
+    return 0;
+}
